@@ -1,5 +1,7 @@
 #pragma once
 
+#define ReturnIfFailed(hr) { if (FAILED(hr)) { __debugbreak(); return; } }
+
 struct DeviceResources
 {
     DeviceResources();

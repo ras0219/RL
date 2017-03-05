@@ -61,7 +61,7 @@ struct AppView : implements<AppView, IFrameworkView>
 
         window.SizeChanged([=](auto &&, WindowSizeChangedEventArgs const & args)
         {
-            //
+            m_deviceResources.InitializeWindowResources(window);
         });
 
         window.VisibilityChanged([=](auto &&, VisibilityChangedEventArgs const & args)

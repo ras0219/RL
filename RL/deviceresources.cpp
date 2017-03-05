@@ -4,8 +4,6 @@
 
 using namespace Microsoft::WRL;
 
-#define ReturnIfFailed(hr) { if (FAILED(hr)) return; }
-
 DeviceResources::DeviceResources()
 {
     InitializeDeviceIndependentResources();
@@ -135,6 +133,16 @@ void DeviceResources::InitializeWindowResources(winrt::Windows::UI::Core::CoreWi
 {
     WindowDependentResources resources = {};
 
+    // Clear the previous window size specific context.
+    ID3D11RenderTargetView* nullViews[] = { nullptr };
+    m_deviceDependentResources.d3d.context->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
+    m_windowDependentResources.d3d.renderTargetView = nullptr;
+    m_deviceDependentResources.d2d.context->SetTarget(nullptr);
+    m_windowDependentResources.d2d.targetBitmap = nullptr;
+    m_windowDependentResources.d3d.depthStencilView = nullptr;
+    m_deviceDependentResources.d3d.context->Flush();
+
+    // Calculate the size of the window.
     resources.d3d.renderTargetSize.Width = window.Bounds().Width;
     resources.d3d.renderTargetSize.Height = window.Bounds().Height;
 
