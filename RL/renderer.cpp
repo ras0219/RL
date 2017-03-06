@@ -60,7 +60,18 @@ void ConsoleRenderer::Render(DeviceResources & deviceResources)
 
     D2D1_SIZE_F size = context2d->GetSize();
 
-    const std::string text = "ABCDEFGHIJKLMNOPQURSTUVWXYZ";
+    const std::string map[] = {
+        "XXXXXXXXXXXXXXXXXXXXX",
+        "X                   X",
+        "X                   X",
+        "X                   X",
+        "X       HELLO       X",
+        "X       WORLD       X",
+        "X                   X",
+        "X                   X",
+        "X                   X",
+        "XXXXXXXXXXXXXXXXXXXXX",
+    };
     const D2D1_SIZE_U tileSize = D2D1::SizeU(14, 22);
 
     D2D1_SIZE_U tileSpan = D2D1::SizeU(
@@ -68,25 +79,45 @@ void ConsoleRenderer::Render(DeviceResources & deviceResources)
         (int)ceil(size.height / tileSize.height));
 
     D2D1_SIZE_F consolePadding = D2D1::SizeF(
-        (size.width - tileSpan.width * tileSize.width) / 2.0f,
-        (size.height - tileSpan.height * tileSize.height) / 2.0f);
+        floor((size.width - tileSpan.width * tileSize.width) / 2.0f),
+        floor((size.height - tileSpan.height * tileSize.height) / 2.0f));
+
+    D2D1_SIZE_U mapSize = D2D1::SizeU(
+        map[0].length(),
+        ARRAYSIZE(map));
+
+    D2D1_SIZE_U mapOffset = D2D1::SizeU(
+        (tileSpan.width - mapSize.width) / 2,
+        (tileSpan.height - mapSize.height) / 2);
 
     for (auto x = 0; x < tileSpan.width; x++) {
         for (auto y = 0; y < tileSpan.height; y++) {
+
+            D2D1_POINT_2U mapTile = D2D1::Point2U(
+                x - mapOffset.width,
+                y - mapOffset.height);
+
+            if (mapTile.x < 0 ||
+                mapTile.y < 0 ||
+                mapTile.x >= mapSize.width ||
+                mapTile.y >= mapSize.height)
+            {
+                continue;
+            }
+
             D2D1_RECT_F tileRect = D2D1::RectF(
                 x * tileSize.width + consolePadding.width,
                 y * tileSize.height + consolePadding.height,
                 (x + 1) * tileSize.width + consolePadding.width,
                 (y + 1) * tileSize.height + consolePadding.height);
 
-            if ((x + y) % 2)
-            {
-                context2d->FillRectangle(
-                    tileRect,
-                    m_deviceDependentResources.grayBrush.Get());
-            }
+            /*
+            context2d->FillRectangle(
+                tileRect,
+                m_deviceDependentResources.grayBrush.Get());
+             */
 
-            WCHAR ch = (WCHAR)text[(y * tileSpan.width + x) % text.length()];
+            WCHAR ch = map[mapTile.y][mapTile.x];
             context2d->DrawText(
                 &ch,
                 1,
