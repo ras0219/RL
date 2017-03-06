@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 
 #include "deviceresources.h"
 #include "renderer.h"
@@ -61,15 +61,23 @@ void ConsoleRenderer::Render(DeviceResources & deviceResources)
     D2D1_SIZE_F size = context2d->GetSize();
 
     const std::string text = "ABCDEFGHIJKLMNOPQURSTUVWXYZ";
-    const D2D1_SIZE_U tileSize = D2D1::SizeU(14.0f, 22.0f);
+    const D2D1_SIZE_U tileSize = D2D1::SizeU(14, 22);
 
-    for (auto x = 0; x < size.width / tileSize.width; x++) {
-        for (auto y = 0; y < size.height / tileSize.height; y++) {
+    D2D1_SIZE_U tileSpan = D2D1::SizeU(
+        (int)ceil(size.width / tileSize.width),
+        (int)ceil(size.height / tileSize.height));
+
+    D2D1_SIZE_F consolePadding = D2D1::SizeF(
+        (size.width - tileSpan.width * tileSize.width) / 2.0f,
+        (size.height - tileSpan.height * tileSize.height) / 2.0f);
+
+    for (auto x = 0; x < tileSpan.width; x++) {
+        for (auto y = 0; y < tileSpan.height; y++) {
             D2D1_RECT_F tileRect = D2D1::RectF(
-                x * tileSize.width,
-                y * tileSize.height,
-                (x + 1) * tileSize.width,
-                (y + 1) * tileSize.height);
+                x * tileSize.width + consolePadding.width,
+                y * tileSize.height + consolePadding.height,
+                (x + 1) * tileSize.width + consolePadding.width,
+                (y + 1) * tileSize.height + consolePadding.height);
 
             if ((x + y) % 2)
             {
@@ -78,7 +86,7 @@ void ConsoleRenderer::Render(DeviceResources & deviceResources)
                     m_deviceDependentResources.grayBrush.Get());
             }
 
-            WCHAR ch = (WCHAR)text[(x * (int)size.height / tileSize.width + y) % text.length()];
+            WCHAR ch = (WCHAR)text[(y * tileSpan.width + x) % text.length()];
             context2d->DrawText(
                 &ch,
                 1,
