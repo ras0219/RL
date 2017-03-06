@@ -5,7 +5,7 @@
 
 using namespace Microsoft::WRL;
 
-void Renderer::InitializeDeviceDependentResources(DeviceResources & deviceResources)
+void ConsoleRenderer::InitializeDeviceDependentResources(DeviceResources & deviceResources)
 {
     DeviceDependentResources resources = {};
 
@@ -16,7 +16,7 @@ void Renderer::InitializeDeviceDependentResources(DeviceResources & deviceResour
         &resources.whiteBrush));
 
     ReturnIfFailed(context2d->CreateSolidColorBrush(
-        D2D1::ColorF(D2D1::ColorF::LightSlateGray, 1.0f),
+        D2D1::ColorF(D2D1::ColorF::Gray, 1.0f),
         &resources.grayBrush));
 
     // Create device independent resources
@@ -27,7 +27,7 @@ void Renderer::InitializeDeviceDependentResources(DeviceResources & deviceResour
         DWRITE_FONT_WEIGHT_LIGHT,
         DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH_NORMAL,
-        14.0f,
+        18.0f,
         L"en-US",
         &resources.textFormat));
     ReturnIfFailed(resources.textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER));
@@ -36,7 +36,7 @@ void Renderer::InitializeDeviceDependentResources(DeviceResources & deviceResour
     m_deviceDependentResources = resources;
 }
 
-void Renderer::Render(DeviceResources & deviceResources)
+void ConsoleRenderer::Render(DeviceResources & deviceResources)
 {
     auto context3d = deviceResources.m_deviceDependentResources.d3d.context;
     auto context2d = deviceResources.m_deviceDependentResources.d2d.context;
@@ -60,9 +60,16 @@ void Renderer::Render(DeviceResources & deviceResources)
 
     D2D1_SIZE_F size = context2d->GetSize();
 
-    for (auto x = 0; x < size.width / 10.0f; x++) {
-        for (auto y = 0; y < size.height / 14.0f; y++) {
-            D2D1_RECT_F tileRect = D2D1::RectF(x * 10.0f, y * 14.0f, (x + 1) * 10.0f, (y + 1) * 14.0f);
+    const std::string text = "ABCDEFGHIJKLMNOPQURSTUVWXYZ";
+    const D2D1_SIZE_U tileSize = D2D1::SizeU(14.0f, 22.0f);
+
+    for (auto x = 0; x < size.width / tileSize.width; x++) {
+        for (auto y = 0; y < size.height / tileSize.height; y++) {
+            D2D1_RECT_F tileRect = D2D1::RectF(
+                x * tileSize.width,
+                y * tileSize.height,
+                (x + 1) * tileSize.width,
+                (y + 1) * tileSize.height);
 
             if ((x + y) % 2)
             {
@@ -71,8 +78,9 @@ void Renderer::Render(DeviceResources & deviceResources)
                     m_deviceDependentResources.grayBrush.Get());
             }
 
+            WCHAR ch = (WCHAR)text[(x * (int)size.height / tileSize.width + y) % text.length()];
             context2d->DrawText(
-                L"#",
+                &ch,
                 1,
                 m_deviceDependentResources.textFormat.Get(),
                 tileRect,

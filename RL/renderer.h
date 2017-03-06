@@ -1,6 +1,6 @@
 #pragma once
 
-struct Renderer
+struct ConsoleRenderer
 {
     void Render(DeviceResources & resources);
 

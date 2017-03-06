@@ -83,7 +83,7 @@ struct AppView : implements<AppView, IFrameworkView>
     CoreWindow::Activated_revoker m_activated;
 
     DeviceResources m_deviceResources;
-    Renderer m_renderer;
+    ConsoleRenderer m_renderer;
 
     struct {
         bool activated = false;
