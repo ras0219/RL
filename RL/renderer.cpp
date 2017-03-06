@@ -15,6 +15,10 @@ void Renderer::InitializeDeviceDependentResources(DeviceResources & deviceResour
         D2D1::ColorF(D2D1::ColorF::White, 1.0f),
         &resources.whiteBrush));
 
+    ReturnIfFailed(context2d->CreateSolidColorBrush(
+        D2D1::ColorF(D2D1::ColorF::LightSlateGray, 1.0f),
+        &resources.grayBrush));
+
     // Create device independent resources
     ComPtr<IDWriteTextFormat> textFormat;
     ReturnIfFailed(deviceResources.m_deviceIndependentResources.dwrite.factory->CreateTextFormat(
@@ -58,11 +62,20 @@ void Renderer::Render(DeviceResources & deviceResources)
 
     for (auto x = 0; x < size.width / 10.0f; x++) {
         for (auto y = 0; y < size.height / 14.0f; y++) {
+            D2D1_RECT_F tileRect = D2D1::RectF(x * 10.0f, y * 14.0f, (x + 1) * 10.0f, (y + 1) * 14.0f);
+
+            if ((x + y) % 2)
+            {
+                context2d->FillRectangle(
+                    tileRect,
+                    m_deviceDependentResources.grayBrush.Get());
+            }
+
             context2d->DrawText(
-                L"0",
+                L"#",
                 1,
                 m_deviceDependentResources.textFormat.Get(),
-                D2D1::RectF(x * 10.0f, y * 14.0f, (x + 1) * 10.0f, (y + 1) * 14.0f),
+                tileRect,
                 m_deviceDependentResources.whiteBrush.Get());
         }
     }

@@ -7,6 +7,7 @@ struct Renderer
     struct DeviceDependentResources
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> whiteBrush;
+        Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> grayBrush;
         Microsoft::WRL::ComPtr<IDWriteTextFormat> textFormat;
     } m_deviceDependentResources;
 
