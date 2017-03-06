@@ -30,6 +30,21 @@ void DeviceResources::InitializeDeviceIndependentResources()
         &options,
         &resources.d2d.factory));
 
+    // Initialize the DirectWrite Factory.
+    ReturnIfFailed(DWriteCreateFactory(
+        DWRITE_FACTORY_TYPE_SHARED,
+        __uuidof(IDWriteFactory3),
+        &resources.dwrite.factory
+    ));
+
+    // Initialize the Windows Imaging Component (WIC) Factory.
+    ReturnIfFailed(CoCreateInstance(
+        CLSID_WICImagingFactory2,
+        nullptr,
+        CLSCTX_INPROC_SERVER,
+        IID_PPV_ARGS(&resources.dwrite.wicFactory)
+    ));
+
     // Store resources if initialization succeeded.
     m_deviceIndependentResources = resources;
 }

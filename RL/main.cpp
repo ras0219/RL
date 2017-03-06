@@ -12,7 +12,7 @@ struct AppView : implements<AppView, IFrameworkView>
 {
     void Initialize(CoreApplicationView const & view)
     {
-        //
+        m_renderer.InitializeDeviceDependentResources(m_deviceResources);
     }
 
     void Load(hstring)

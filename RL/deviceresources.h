@@ -13,6 +13,10 @@ struct DeviceResources
         struct {
             Microsoft::WRL::ComPtr<ID2D1Factory3> factory;
         } d2d;
+        struct {
+            Microsoft::WRL::ComPtr<IDWriteFactory3> factory;
+            Microsoft::WRL::ComPtr<IWICImagingFactory2>	wicFactory;
+        } dwrite;
     } m_deviceIndependentResources;
 
     void InitializeDeviceIndependentResources();
