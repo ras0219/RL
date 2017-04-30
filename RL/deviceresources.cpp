@@ -217,11 +217,10 @@ void DeviceResources::InitializeWindowResources(winrt::Windows::UI::Core::CoreWi
         ComPtr<IDXGIFactory4> dxgiFactory;
         ReturnIfFailed(dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory)));
 
-        ComPtr<IUnknown> windowUnkown;
-        window->QueryInterface(IID_PPV_ARGS(&windowUnkown));
+        auto windowUnkown = window.as<IUnknown>();
         HRESULT hr = dxgiFactory->CreateSwapChainForCoreWindow(
             m_deviceDependentResources.d3d.device.Get(),
-            windowUnkown.Get(),
+            &*windowUnkown,
             &swapChainDesc,
             nullptr,
             &resources.d3d.swapChain);

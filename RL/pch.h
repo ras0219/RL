@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #pragma comment(lib, "windowsapp")
+#pragma warning(disable : 4467)
 
 #include <wrl.h>
 #include <dxgi1_4.h>
